@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather Alerts — Project Showcase</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+
+  :root{
+    --navy-deep:#0c1524;
+    --navy-panel:#152238;
+    --navy-line:#24354f;
+    --teal:#3fa796;
+    --amber:#f2a93b;
+    --red-alert:#e0563f;
+    --text-bright:#eef2f6;
+    --text-muted:#8ea0b8;
+    --text-dim:#5c6c84;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--navy-deep);
+    color:var(--text-bright);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.55;
+  }
+  h1,h2,h3{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:700;
+    letter-spacing:0.01em;
+    margin:0;
+  }
+  a{ color:inherit; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+
+  /* ---- ticker ---- */
+  .ticker-bar{
+    background:var(--navy-panel);
+    border-bottom:1px solid var(--navy-line);
+    overflow:hidden;
+    white-space:nowrap;
+    padding:9px 0;
+  }
+  .ticker-track{
+    display:inline-block;
+    padding-left:100%;
+    animation:scroll-left 28s linear infinite;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--text-muted);
+  }
+  .ticker-track span.tag{
+    color:var(--amber);
+    font-weight:500;
+  }
+  @keyframes scroll-left{
+    0%{ transform:translateX(0); }
+    100%{ transform:translateX(-100%); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ticker-track{ animation:none; padding-left:24px; }
+  }
+
+  /* ---- layout ---- */
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:0 28px;
+  }
+  header.hero{
+    padding:72px 0 56px;
+    border-bottom:1px solid var(--navy-line);
+  }
+  .status-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--amber);
+    background:rgba(242,169,59,0.08);
+    border:1px solid rgba(242,169,59,0.35);
+    padding:5px 12px;
+    border-radius:3px;
+    margin-bottom:22px;
+  }
+  .status-pill .dot{
+    width:7px; height:7px;
+    border-radius:50%;
+    background:var(--amber);
+    box-shadow:0 0 8px var(--amber);
+  }
+  h1.title{
+    font-size:clamp(40px, 6vw, 62px);
+    line-height:1.02;
+    max-width:12ch;
+    color:var(--text-bright);
+  }
+  .subtitle{
+    margin-top:22px;
+    max-width:56ch;
+    font-size:18px;
+    color:var(--text-muted);
+  }
+  .hero-meta{
+    display:flex;
+    gap:32px;
+    margin-top:36px;
+    flex-wrap:wrap;
+  }
+  .hero-meta div{
+    font-size:13px;
+    color:var(--text-dim);
+  }
+  .hero-meta strong{
+    display:block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px;
+    color:var(--teal);
+    font-weight:500;
+    margin-bottom:3px;
+  }
+
+  section{
+    padding:64px 0;
+    border-bottom:1px solid var(--navy-line);
+  }
+  section:last-of-type{ border-bottom:none; }
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:34px;
+  }
+  .section-num{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--text-dim);
+    font-size:14px;
+  }
+  h2.section-title{
+    font-size:30px;
+    color:var(--text-bright);
+  }
+
+  /* ---- flow diagram ---- */
+  .flow{
+    display:flex;
+    flex-direction:column;
+    gap:0;
+  }
+  .flow-node{
+    background:var(--navy-panel);
+    border:1px solid var(--navy-line);
+    border-radius:4px;
+    padding:16px 18px;
+  }
+  .flow-node h4{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--teal);
+    font-weight:500;
+    margin:0 0 6px;
+    text-transform:none;
+  }
+  .flow-node p{
+    margin:0;
+    font-size:14px;
+    color:var(--text-muted);
+  }
+  .flow-arrow-down{
+    display:flex;
+    justify-content:center;
+    color:var(--text-dim);
+    font-size:18px;
+    padding:6px 0;
+  }
+  .flow-node.source{
+    border-color:var(--amber);
+    background:rgba(242,169,59,0.06);
+  }
+  .flow-node.source h4{ color:var(--amber); }
+
+  /* ---- output cards ---- */
+  .outputs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+  @media (max-width:640px){ .outputs{ grid-template-columns:1fr; } }
+  .output-card{
+    border:1px solid var(--navy-line);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .output-card .card-head{
+    padding:16px 18px;
+    background:var(--navy-panel);
+    border-bottom:1px solid var(--navy-line);
+  }
+  .output-card .card-head h3{
+    font-size:20px;
+    color:var(--text-bright);
+  }
+  .output-card .card-body{
+    padding:16px 18px;
+    font-size:14px;
+    color:var(--text-muted);
+  }
+  .output-card .card-body ul{
+    margin:0;
+    padding-left:18px;
+  }
+  .output-card .card-body li{ margin-bottom:6px; }
+
+  /* ---- roadmap ---- */
+  .roadmap{ display:flex; flex-direction:column; gap:2px; }
+  .road-item{
+    display:grid;
+    grid-template-columns:130px 1fr;
+    gap:20px;
+    padding:16px 0;
+    border-top:1px solid var(--navy-line);
+  }
+  .road-item:first-child{ border-top:none; }
+  .road-status{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.02em;
+  }
+  .road-status.done{ color:var(--teal); }
+  .road-status.progress{ color:var(--amber); }
+  .road-status.open{ color:var(--text-dim); }
+  .road-desc h4{
+    font-size:17px;
+    font-weight:600;
+    font-family:'IBM Plex Sans', sans-serif;
+    color:var(--text-bright);
+    margin:0 0 4px;
+  }
+  .road-desc p{
+    margin:0;
+    font-size:14px;
+    color:var(--text-muted);
+    max-width:60ch;
+  }
+
+  footer{
+    padding:40px 0 64px;
+    color:var(--text-dim);
+    font-size:13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="ticker-bar">
+  <div class="ticker-track">
+    <span class="tag">PROJECT LOG</span> &nbsp;·&nbsp; weather-alerts &nbsp;·&nbsp; NWS API poll interval: 60s &nbsp;·&nbsp; display via TvOverlay on Google TV &nbsp;·&nbsp; status: in active development &nbsp;·&nbsp; &nbsp;&nbsp;
+    <span class="tag">PROJECT LOG</span> &nbsp;·&nbsp; weather-alerts &nbsp;·&nbsp; NWS API poll interval: 60s &nbsp;·&nbsp; display via TvOverlay on Google TV &nbsp;·&nbsp; status: in active development &nbsp;·&nbsp;
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="status-pill"><span class="dot"></span>IN ACTIVE DEVELOPMENT</div>
+    <h1 class="title">Weather Alerts</h1>
+    <p class="subtitle">A live severe-weather overlay system — pulling NWS alerts straight onto the living room TV, so the alert shows up on screen the moment it's issued, without touching a remote.</p>
+    <div class="hero-meta">
+      <div><strong>Alert source</strong>NWS API, polled every 60s</div>
+      <div><strong>Display target</strong>Google TV device</div>
+      <div><strong>Delivery</strong>Cast overlay, no input switch needed</div>
+    </div>
+  </header>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2 class="section-title">How it works</h2>
+    </div>
+    <div class="flow">
+      <div class="flow-node source">
+        <h4>NWS API</h4>
+        <p>Polled every minute — either through Home Assistant's nws_alerts integration or a custom poller — for active alerts covering the area.</p>
+      </div>
+      <div class="flow-arrow-down">↓</div>
+      <div class="flow-node">
+        <h4>TV overlay</h4>
+        <p>Pushed to the living room's Google TV box through the TvOverlay app, which draws the alert directly over whatever's on screen — no need to switch inputs or interrupt what's casting.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Two tiers of display</h2>
+    </div>
+    <div class="outputs">
+      <div class="output-card">
+        <div class="card-head"><h3>Corner badge</h3></div>
+        <div class="card-body">
+          <p>A lightweight, persistent alert badge for lower-severity events — title, severity color, and icon, pushed via TvOverlay's notify_fixed endpoint. Expires automatically when the alert does.</p>
+        </div>
+      </div>
+      <div class="output-card">
+        <div class="card-head"><h3>Full news-style overlay</h3></div>
+        <div class="card-body">
+          <p>For higher-severity alerts: an HTML layout with the affected area map, a radar loop, and a scrolling marquee — captured by a headless browser, encoded with FFmpeg into a live HLS stream, and pushed as video through TvOverlay.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Build status</h2>
+    </div>
+    <div class="roadmap">
+      <div class="road-item">
+        <div class="road-status done">BUILT</div>
+        <div class="road-desc">
+          <h4>Lower-third ticker prototype</h4>
+          <p>An HTML overlay at 1920×1080 with a transparent background for compositing — sunset-gradient logo badge, CSS-animated scrolling ticker, a self-updating clock, and a setWeather() hook ready to receive live NWS data.</p>
+        </div>
+      </div>
+      <div class="road-item">
+        <div class="road-status progress">IN PROGRESS</div>
+        <div class="road-desc">
+          <h4>Persistent always-on overlay</h4>
+          <p>Three approaches researched — a custom Android TV app using TYPE_APPLICATION_OVERLAY, an inline HDMI compositor, and a dedicated companion screen. No decision made yet on which one ships.</p>
+        </div>
+      </div>
+      <div class="road-item">
+        <div class="road-status open">PLANNED</div>
+        <div class="road-desc">
+          <h4>Non-Android-TV fallback</h4>
+          <p>For cast devices that aren't Android TV boxes, a Cast-takeover approach using Home Assistant's Lovelace cast or a registered custom Web Receiver.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Built and maintained by Mark.
+  </footer>
+
+</div>
+
+</body>
+</html>
