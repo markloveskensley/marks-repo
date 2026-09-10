@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CFB Scoreboard Overlay</string>
+    <string name="accessibility_service_description">Lets a dedicated remote button toggle the NCAA football scoreboard overlay on top of any app.</string>
+</resources>
