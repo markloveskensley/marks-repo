@@ -49,7 +49,7 @@ class RemoteKeyAccessibilityService : AccessibilityService() {
      * Change this if you bind a different button (check the exact keycode
      * with Button Mapper's key-capture screen first).
      */
-    private val toggleKeyCode = KeyEvent.KEYCODE_BUTTON_9
+    private val toggleKeyCode = KeyEvent.KEYCODE_MACRO_1
 
     /** Overlay width in pixels — matches roughly the panel size already tuned in the web page. */
     private val overlayWidthPx = 480
